@@ -122,6 +122,7 @@ end)()
 local Config = (function()
     local config
     local switch_time = 1
+    local use_default_playlist = false
 
     local config_file = "config.json"
 
@@ -165,9 +166,11 @@ local Config = (function()
     end
 
     local function load_playlist()
+        use_default_playlist = false
         local playlist = {}
         if #config.playlist == 0 then
             playlist = settings.FALLBACK_PLAYLIST
+            use_default_playlist = true
             switch_time = 0
         else
             playlist = {}
@@ -202,6 +205,7 @@ local Config = (function()
 
         if #playlist == 0 then
             playlist = settings.FALLBACK_PLAYLIST
+            use_default_playlist = true
         end
 
         if #playlist <= 1 then
@@ -244,6 +248,7 @@ local Config = (function()
         get_playlist = function() return load_playlist() end;
         get_switch_time = function() return switch_time end;
         get_progress = function() return progress end;
+        is_default_playlist = function () return use_default_playlist end;
     }
 end)()
 
@@ -493,8 +498,14 @@ function node.render()
 
     if use_fake_time then
         red:draw(0, 0, WIDTH, 60)
-        local time = os.date("!%d/%m/%y %H:%M", get_now())
+        local time = os.date("!%d/%m/%Y %H:%M", get_now())
         font:write(10, 10, "USING FAKE TIME: " .. time, 40, 0, 0, 0, 1)
+    end
+
+    if Config.is_default_playlist() then
+        local time = os.date("!%d/%m/%Y %H:%M:%S", get_now())
+        local width = font:width(time, 60)
+        font:write((WIDTH - width)/2, (HEIGHT/2)-60, time, 60, 1, 1, 1, 1)
     end
 
 end
