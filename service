@@ -1,0 +1,33 @@
+#!/usr/bin/python
+import sys
+import time
+import pytz
+from calendar import timegm
+from datetime import datetime
+
+from hosted import CONFIG, NODE
+
+CONFIG.restart_on_update()
+
+def current_time():
+    now = datetime.utcnow()
+    now = now.replace(tzinfo=pytz.utc)
+    now = now.astimezone(pytz.timezone(CONFIG['timezone']))
+    now = now.replace(tzinfo=None)
+
+    timestamp = timegm(now.timetuple()) + now.microsecond / 1000000.
+
+    return now, timestamp
+
+def send_clock(ts):
+    NODE.send('/clock/set:%f' % ts)
+
+def main():
+    while 1:
+        now, ts = current_time()
+        print >>sys.stderr, "time is", now, ts
+        send_clock(ts)
+        time.sleep(10)
+
+if __name__ == "__main__":
+    main()

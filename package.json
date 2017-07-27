@@ -1,0 +1,7 @@
+{
+  "name": "Info Screen",
+  "author": "craig@netchaos.net",
+  "desc": "Displays a sequence of scheduled images and videos for public information displays",
+  "repository": "https://github.com/edbookfest/info-screen-display.git",
+  "version": "0.1"
+}
